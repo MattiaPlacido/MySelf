@@ -1,6 +1,8 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { jwtDecode } from "jwt-decode";
 
+const urlBackEnd = import.meta.env.API_URL;
+
 const GlobalContext = createContext();
 
 export function GlobalContextProvider({ children }) {
@@ -9,7 +11,7 @@ export function GlobalContextProvider({ children }) {
   //FUNZIONI
   async function login(email) {
     try {
-      const response = await fetch(`http://localhost:3330/user/emailToId`, {
+      const response = await fetch(`${urlBackEnd}/user/emailToId`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

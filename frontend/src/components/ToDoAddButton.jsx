@@ -4,6 +4,8 @@ import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import Form from "react-bootstrap/Form";
 
+const urlBackEnd = import.meta.env.API_URL;
+
 const initialFormData = {
   title: "",
   content: "",
@@ -35,7 +37,7 @@ export default function ToDoAddButton() {
       return;
     }
 
-    fetch("http://localhost:3330/general/addtodo", {
+    fetch(`${urlBackEnd}/general/addtodo`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

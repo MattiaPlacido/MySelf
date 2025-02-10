@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { NavLink } from "react-router-dom";
 
+const urlBackEnd = import.meta.env.API_URL;
+
 const initialFormData = {
   name: "",
   surname: "",
@@ -31,7 +33,7 @@ export default function RegistrationPage() {
     }
 
     try {
-      const emailResponse = await fetch("http://localhost:3330/user/emails", {
+      const emailResponse = await fetch(`${urlBackEnd}/user/emails`, {
         method: "GET",
       });
 
@@ -66,16 +68,13 @@ export default function RegistrationPage() {
     }
 
     try {
-      const registerResponse = await fetch(
-        "http://localhost:3330/user/register",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ name, surname, email, password }),
-        }
-      );
+      const registerResponse = await fetch(`${urlBackEnd}/user/register`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ name, surname, email, password }),
+      });
 
       const data = await registerResponse.json();
 
