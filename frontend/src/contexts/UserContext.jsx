@@ -8,9 +8,26 @@ const UserContext = createContext();
 export function UserContextProvider({ children }) {
   const [userId, setUserId] = useState(null);
 
+  function checkTokenExpiration() {
+    const token = localStorage.getItem("myToken");
+    if (token) {
+      const decoded = jwtDecode(token);
+      if (decoded.exp * 1000 < Date.now()) {
+        localStorage.removeItem("myToken");
+        alert("Session expired. Please log in again.");
+        window.location.href = "/login";
+      }
+    }
+  }
+  useEffect(() => {
+    const interval = setInterval(() => {
+      checkTokenExpiration();
+    }, 60000);
 
-  
-  //FUNZIONI
+    return () => clearInterval(interval);
+  }, []);
+
+  //USER FUNCTIONS
   async function login(email) {
     try {
       const response = await fetch(`${urlBackEnd}/user/emailToId`, {
@@ -51,10 +68,6 @@ export function UserContextProvider({ children }) {
       return null;
     }
   }
-
-  useEffect(() => {
-    setUserIdFromToken();
-  }, []);
 
   function logout() {
     setUserId(null);

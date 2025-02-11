@@ -19,23 +19,6 @@ import NotFoundPage from "./pages/NotFoundPage";
 import LoginPage from "./pages/LoginPage";
 import RegistrationPage from "./pages/RegistrationPage";
 
-//Check if token is expired
-function checkTokenExpiration() {
-  const token = localStorage.getItem("myToken");
-  if (token) {
-    const decoded = jwtDecode(token);
-    if (decoded.exp * 1000 < Date.now()) {
-      localStorage.removeItem("myToken");
-      alert("Session expired. Please log in again.");
-      window.location.href = "/login";
-    }
-  }
-}
-
-useEffect(() => {
-  checkTokenExpiration();
-}, []);
-
 function App() {
   return (
     <UserContextProvider>
