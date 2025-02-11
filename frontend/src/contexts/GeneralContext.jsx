@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { useUserContext } from "./UserContext";
 
 const urlBackEnd = import.meta.env.VITE_API_URL;
@@ -60,6 +60,13 @@ export function GeneralContextProvider({ children }) {
         setError(error.message);
       });
   }
+
+  //DATA LOADING
+  useEffect(() => {
+    if (userId) {
+      retrieveTasks();
+    }
+  }, [userId]);
 
   const userTasks = {
     tasks,

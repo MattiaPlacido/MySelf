@@ -24,10 +24,8 @@ export default function TasksPage() {
     if (!userId) {
       setTasks([]);
       window.location.href = "/login";
-    } else {
-      retrieveTasks();
     }
-  }, [userId]);
+  }, []);
 
   if (loading) {
     return (
