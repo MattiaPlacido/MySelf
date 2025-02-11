@@ -4,7 +4,7 @@ import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import Form from "react-bootstrap/Form";
 
-const urlBackEnd = import.meta.env.API_URL;
+const urlBackEnd = import.meta.env.VITE_API_URL;
 
 const initialFormData = {
   title: "",
@@ -13,7 +13,7 @@ const initialFormData = {
   deadLineDate: "",
 };
 
-export default function ToDoAddButton() {
+export default function AddTaskButton() {
   const [show, setShow] = useState(false);
   const [formData, setFormData] = useState(initialFormData);
   const { userId } = useGlobalContext();
@@ -31,19 +31,20 @@ export default function ToDoAddButton() {
     }));
   };
 
-  function handleSubmit() {
+  function handleSubmit(e) {
+    e.preventDefault();
     if (formData.title == "") {
       alert("Il titolo è vuoto.");
       return;
     }
 
-    fetch(`${urlBackEnd}/general/addtodo`, {
+    fetch(`${urlBackEnd}/general/addtask`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        content: formData.content,
+        content: formData.content || null,
         title: formData.title,
         date: formData.deadLineDate || null,
         userId: userId,
@@ -52,7 +53,7 @@ export default function ToDoAddButton() {
       .then((res) => res.json())
       .then((data) => {
         data
-          ? console.log("Todo added successfully!")
+          ? console.log("task added successfully!")
           : console.log("An error has occurred sending the request.");
       })
       .catch((error) => {
@@ -66,12 +67,12 @@ export default function ToDoAddButton() {
   return (
     <>
       <Button variant="light" onClick={handleShow}>
-        Make a to-do!
+        Add a task!
       </Button>
 
       <Modal show={show} onHide={handleClose}>
         <Modal.Header closeButton>
-          <Modal.Title>Add your to-do!</Modal.Title>
+          <Modal.Title>Your Task</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form onSubmit={handleSubmit}>

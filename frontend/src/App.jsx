@@ -10,7 +10,7 @@ import DefaultLayout from "./layouts/DefaultLayout/DefaultLayout";
 // * PAGES
 import HomePage from "./pages/HomePage";
 import FinancePage from "./pages/FinancePage";
-import ToDoPage from "./pages/MyToDos/MyToDos";
+import TasksPage from "./pages/tasks/TasksPage";
 import DailyPage from "./pages/DailyPage";
 import MonthlyPage from "./pages/MonthPage";
 import NotFoundPage from "./pages/NotFoundPage";
@@ -24,7 +24,7 @@ function App() {
         <Routes>
           <Route path="/" element={<DefaultLayout />}>
             <Route index element={<HomePage />} />
-            <Route path="tasks" element={<ToDoPage />} />
+            <Route path="tasks" element={<TasksPage />} />
             <Route path="finance" element={<FinancePage />} />
             <Route path="routine" element={<DailyPage />} />
             {/* <Route path="monthly" element={<MonthlyPage />} /> */}
