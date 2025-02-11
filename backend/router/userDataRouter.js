@@ -7,7 +7,8 @@ require("dotenv").config();
 const bcrypt = require("bcrypt");
 const connection = require("../db_connection");
 
-//EMAIL INDEX
+// email index
+// on host/user/emails
 userDataRouter.get("/emails", (req, res) => {
   const sql = "SELECT email FROM users";
   connection.query(sql, (err, results) => {
@@ -16,7 +17,8 @@ userDataRouter.get("/emails", (req, res) => {
   });
 });
 
-//GET ID BASED ON EMAIL
+// id from email
+// on host/user/emailToId
 userDataRouter.post("/emailToId", (req, res) => {
   console.log("EmailToId request ");
   const { email } = req.body;
@@ -40,7 +42,8 @@ userDataRouter.post("/emailToId", (req, res) => {
   });
 });
 
-//REGISTER
+// user registration
+// on host/user/register
 userDataRouter.post("/register", async (req, res) => {
   const { email, name, surname, password } = req.body;
   console.log(email, name, surname, password);
@@ -72,7 +75,8 @@ userDataRouter.post("/register", async (req, res) => {
   }
 });
 
-//LOGIN
+// user login
+// on host/user/register
 const jwt = require("jsonwebtoken");
 
 userDataRouter.post("/login", async (req, res) => {

@@ -1,6 +1,6 @@
 const connection = require("../db_connection");
 
-//ROUTINE
+//Daily tasks CRUD
 //index
 
 //show
