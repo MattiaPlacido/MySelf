@@ -3,9 +3,9 @@ import { jwtDecode } from "jwt-decode";
 
 const urlBackEnd = import.meta.env.API_URL;
 
-const GlobalContext = createContext();
+const UserContext = createContext();
 
-export function GlobalContextProvider({ children }) {
+export function UserContextProvider({ children }) {
   const [userId, setUserId] = useState(null);
 
   //FUNZIONI
@@ -60,10 +60,10 @@ export function GlobalContextProvider({ children }) {
   }
 
   return (
-    <GlobalContext.Provider value={{ userId, login, logout }}>
+    <UserContext.Provider value={{ userId, login, logout }}>
       {children}
-    </GlobalContext.Provider>
+    </UserContext.Provider>
   );
 }
 
-export const useGlobalContext = () => useContext(GlobalContext);
+export const useUserContext = () => useContext(UserContext);

@@ -1,10 +1,8 @@
 import { useState } from "react";
-import { useGlobalContext } from "../contexts/GlobalContext";
+import { useGeneralContext } from "../contexts/GeneralContext";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import Form from "react-bootstrap/Form";
-
-const urlBackEnd = import.meta.env.VITE_API_URL;
 
 const initialFormData = {
   title: "",
@@ -16,7 +14,8 @@ const initialFormData = {
 export default function AddTaskButton() {
   const [show, setShow] = useState(false);
   const [formData, setFormData] = useState(initialFormData);
-  const { userId } = useGlobalContext();
+  const { userTasks } = useGeneralContext();
+  const { addTask } = userTasks;
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
@@ -38,27 +37,7 @@ export default function AddTaskButton() {
       return;
     }
 
-    fetch(`${urlBackEnd}/general/addtask`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        content: formData.content || null,
-        title: formData.title,
-        date: formData.deadLineDate || null,
-        userId: userId,
-      }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        data
-          ? console.log("task added successfully!")
-          : console.log("An error has occurred sending the request.");
-      })
-      .catch((error) => {
-        console.log("Error occurred:", error);
-      });
+    addTask(formData);
 
     setFormData(initialFormData);
     setShow(false);

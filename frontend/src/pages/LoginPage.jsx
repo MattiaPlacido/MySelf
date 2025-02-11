@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { NavLink } from "react-router-dom";
-import { useGlobalContext } from "../contexts/GlobalContext";
+import { useUserContext } from "../contexts/UserContext";
 
 const urlBackEnd = import.meta.env.API_URL;
 
@@ -11,7 +11,7 @@ const initialLoginData = {
 
 export default function LoginPage() {
   const [loginData, setLoginData] = useState(initialLoginData);
-  const { login } = useGlobalContext();
+  const { login } = useUserContext();
 
   function handleFormChange(e) {
     const { name, value } = e.target;

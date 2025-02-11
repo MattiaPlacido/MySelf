@@ -1,9 +1,9 @@
 import { NavLink } from "react-router-dom";
-import { useGlobalContext } from "../contexts/GlobalContext";
+import { useUserContext } from "../contexts/UserContext";
 import styles from "./components.module.css";
 
 export default function NavBar() {
-  const { userId, logout } = useGlobalContext();
+  const { userId, logout } = useUserContext();
 
   return (
     <>

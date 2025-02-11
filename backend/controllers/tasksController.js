@@ -4,11 +4,11 @@ const connection = require("../db_connection");
 // index
 // host/general/tasks/:user_id
 function index(req, res) {
-  const { userId } = req.params;
+  const { user_id } = req.params;
   const sql =
     "SELECT tasks.* FROM tasks JOIN users ON tasks.user_id = users.id WHERE users.id = ?";
 
-  connection.query(sql, [userId], (err, results) => {
+  connection.query(sql, [user_id], (err, results) => {
     if (err) return res.status(500).json({ error: "Database query failed" });
     if (results.length === 0)
       return res.status(404).json({ error: "No tasks found" });
