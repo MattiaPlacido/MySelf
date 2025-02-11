@@ -1,10 +1,18 @@
 const connection = require("../db_connection");
 
+
 // Tasks CRUD
 // index
 // host/general/tasks/:user_id
 function index(req, res) {
   const { user_id } = req.params;
+
+  if (req.user_id !== parseInt(user_id)) {
+    return res
+      .status(403)
+      .json({ error: "You are not authorized to view these tasks" });
+  }
+
   const sql =
     "SELECT tasks.* FROM tasks JOIN users ON tasks.user_id = users.id WHERE users.id = ?";
 
@@ -23,9 +31,15 @@ function store(req, res) {
   let { content = null, title, date = null, userId } = req.body;
 
   if (!title || !userId) {
-    const err = new Error("Missing essential parameters");
-    err.code = 400;
-    throw err;
+    return res
+      .status(400)
+      .json({ error: "Missing essential parameters (title, userId)" });
+  }
+
+  if (req.user_id !== parseInt(userId)) {
+    return res
+      .status(403)
+      .json({ error: "You are not authorized to add tasks for this user" });
   }
 
   const sql =

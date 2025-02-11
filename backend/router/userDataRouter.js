@@ -20,7 +20,6 @@ userDataRouter.get("/emails", (req, res) => {
 // id from email
 // on host/user/emailToId
 userDataRouter.post("/emailToId", (req, res) => {
-  console.log("EmailToId request ");
   const { email } = req.body;
 
   if (!email) {
@@ -108,7 +107,7 @@ userDataRouter.post("/login", async (req, res) => {
       //TOKEN GENERATION
       const token = jwt.sign(
         { id: user.id, email: user.email },
-        Buffer.from(process.env.JWT_SECRET_KEY, "base64"),
+        process.env.JWT_SECRET_KEY,
         { algorithm: "HS256", expiresIn: "1h" }
       );
       console.log("Login successfull.");

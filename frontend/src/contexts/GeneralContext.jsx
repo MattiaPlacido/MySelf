@@ -18,8 +18,17 @@ export function GeneralContextProvider({ children }) {
   async function retrieveTasks() {
     setLoading(true);
     try {
+      const token = localStorage.getItem("myToken");
+      if (!token) {
+        setError("No token found. Please log in.");
+        return;
+      }
+
       const response = await fetch(`${urlBackEnd}/general/tasks/${userId}`, {
         method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
 
       if (!response.ok) {
@@ -38,10 +47,18 @@ export function GeneralContextProvider({ children }) {
 
   //add task
   function addTask(task) {
+    const token = localStorage.getItem("myToken");
+    if (!token) {
+      setError("No token found. Please log in.");
+      return;
+    }
+    setLoading(true);
+
     fetch(`${urlBackEnd}/general/addtask`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({
         content: task.content || null,
@@ -53,11 +70,14 @@ export function GeneralContextProvider({ children }) {
       .then((res) => res.json())
       .then((data) => {
         data
-          ? retrieveTasks(userId)
+          ? retrieveTasks()
           : alert("An error has occurred sending the request.");
       })
       .catch((error) => {
         setError(error.message);
+      })
+      .finally(() => {
+        setLoading(false);
       });
   }
 

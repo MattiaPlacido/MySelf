@@ -2,7 +2,7 @@ import { useState } from "react";
 import { NavLink } from "react-router-dom";
 import { useUserContext } from "../contexts/UserContext";
 
-const urlBackEnd = import.meta.env.API_URL;
+const urlBackEnd = import.meta.env.VITE_API_URL;
 
 const initialLoginData = {
   email: "",
@@ -25,6 +25,7 @@ export default function LoginPage() {
   async function handleSubmit() {
     const { email, password } = loginData;
 
+    // CHECKING EMAIL EXISTENCE
     try {
       const emailResponse = await fetch(`${urlBackEnd}/user/emails`, {
         method: "GET",
@@ -33,7 +34,9 @@ export default function LoginPage() {
       if (!emailResponse.ok) {
         throw new Error("Failed to retrieve emails. Please try again.");
       }
+
       const registeredEmails = await emailResponse.json();
+
       let emailExists = false;
       for (let i = 0; i < registeredEmails.length; i++) {
         registeredEmails[i].email.trim().toLowerCase() ==
@@ -50,11 +53,14 @@ export default function LoginPage() {
       alert("An error occurred while checking email availability.");
       return;
     }
+
     if (password.length < 1) {
       alert("Password is empty.");
       return;
     }
+    //EMAIL EXISTS AND PASSWORD IS NOT EMPTY
 
+    //LOGIN ATTEMPT
     try {
       const loginResponse = await fetch(`${urlBackEnd}/user/login`, {
         method: "POST",
@@ -69,9 +75,9 @@ export default function LoginPage() {
         throw new Error("Login failed. Invalid credentials.");
       }
 
-      const loginData = await loginResponse.json();
+      const loginResponseData = await loginResponse.json();
 
-      localStorage.setItem("myToken", loginData.token);
+      localStorage.setItem("myToken", loginResponseData.token);
 
       login(email);
 
