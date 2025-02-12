@@ -99,7 +99,7 @@ export function GeneralContextProvider({ children }) {
         content: task.content || null,
         title: task.title,
         date: task.deadLineDate || null,
-        userId: userId,
+        user_id: userId,
       }),
     })
       .then((res) => res.json())

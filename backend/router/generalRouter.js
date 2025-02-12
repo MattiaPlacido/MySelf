@@ -47,4 +47,14 @@ generalRouter.post(
   dailyTasksController.store
 );
 
+//update
+generalRouter.put("/daily/updatetask/:task_id", dailyTasksController.update);
+
+//delete
+generalRouter.delete(
+  "/daily/tasks/:task_id",
+  tokenAuthorization,
+  dailyTasksController.destroy
+);
+
 module.exports = generalRouter;

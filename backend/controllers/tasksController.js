@@ -16,8 +16,7 @@ function index(req, res) {
       .json({ error: "You are not authorized to view these tasks" });
   }
 
-  const sql =
-    "SELECT * FROM tasks WHERE user_id = ?";
+  const sql = "SELECT * FROM tasks WHERE user_id = ?";
 
   connection.query(sql, [user_id], (err, results) => {
     if (err) return res.status(500).json({ error: "Database query failed" });
@@ -54,6 +53,8 @@ function show(req, res) {
 //store
 function store(req, res) {
   let { content = null, title, date = null, user_id } = req.body;
+
+  console.log(req.body);
 
   if (!user_id || isNaN(user_id) || user_id < 1) {
     return res.status(400).json({ error: "Invalid user id" });
@@ -94,8 +95,25 @@ function store(req, res) {
 
 function update(req, res) {
   const { task_id } = req.params;
-
   const { content, title, date, completed } = req.body;
+
+  if (date) {
+    const dateObject = new Date(date);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    if (isNaN(dateObject.getTime()) || dateObject < today) {
+      return res.status(400).json({ error: "Date is invalid" });
+    }
+  }
+
+  if (completed !== undefined && completed !== true && completed !== false) {
+    return res.status(400).json({ error: "Completed should be a boolean" });
+  }
+
+  if (!task_id || isNaN(task_id) || task_id < 1) {
+    return res.status(400).json({ error: "Invalid task id" });
+  }
 
   const getTaskSql = "SELECT * FROM tasks WHERE id = ?";
   connection.query(getTaskSql, [task_id], (getErr, getResults) => {
@@ -112,25 +130,9 @@ function update(req, res) {
     const existingData = getResults[0];
 
     if (req.user_id !== parseInt(existingData.user_id)) {
-      return res
-        .status(403)
-        .json({
-          error: "You are not authorized to update tasks for this user",
-        });
-    }
-
-    if (date) {
-      const dateObject = new Date(date);
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-
-      if (isNaN(dateObject.getTime()) || dateObject < today) {
-        return res.status(400).json({ error: "Date is invalid" });
-      }
-    }
-
-    if (completed !== undefined && completed !== true && completed !== false) {
-      return res.status(400).json({ error: "Completed should be a boolean" });
+      return res.status(403).json({
+        error: "You are not authorized to update tasks for this user",
+      });
     }
 
     const finalContent = content !== undefined ? content : existingData.content;
@@ -148,11 +150,6 @@ function update(req, res) {
         if (err) {
           return res.status(500).json({ error: "Database query failed" });
         }
-
-        if (results.affectedRows === 0) {
-          return res.status(404).json({ error: "Task not found" });
-        }
-
         res.json(results);
       }
     );
@@ -162,13 +159,34 @@ function update(req, res) {
 //delete
 function destroy(req, res) {
   const { task_id } = req.params;
-  //TODO TOKEN CHECK
-  const sql = "DELETE FROM tasks WHERE id = ?";
-  connection.query(sql, [task_id], (err, results) => {
-    if (err) return res.status(500).json({ error: "Database query failed" });
-    if (results.affectedRows === 0)
+
+  const getTaskSql = "SELECT * FROM tasks WHERE id = ?";
+  connection.query(getTaskSql, [task_id], (getErr, getResults) => {
+    if (!task_id || isNaN(task_id) || task_id < 1) {
+      return res.status(400).json({ error: "Invalid task id" });
+    }
+
+    if (getErr) {
+      return res
+        .status(500)
+        .json({ error: "Failed to fetch existing task data" });
+    }
+
+    if (getResults.length === 0) {
       return res.status(404).json({ error: "Task not found" });
-    res.json(results);
+    }
+
+    if (req.user_id !== parseInt(getResults[0].user_id)) {
+      return res.status(403).json({
+        error: "You are not authorized to delete tasks for this user",
+      });
+    }
+
+    const sql = "DELETE FROM tasks WHERE id = ?";
+    connection.query(sql, [task_id], (err, results) => {
+      if (err) return res.status(500).json({ error: "Database query failed" });
+      res.json(results);
+    });
   });
 }
 
