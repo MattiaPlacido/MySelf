@@ -17,7 +17,7 @@ function index(req, res) {
   }
 
   const sql =
-    "SELECT tasks.* FROM tasks JOIN users ON tasks.user_id = users.id WHERE users.id = ?";
+    "SELECT * FROM tasks WHERE user_id = ?";
 
   connection.query(sql, [user_id], (err, results) => {
     if (err) return res.status(500).json({ error: "Database query failed" });
@@ -88,7 +88,6 @@ function store(req, res) {
     (err, results) => {
       if (err) return res.status(500).json({ error: "Database query failed" });
       res.json(results);
-      console.log("Todo added successfully!");
     }
   );
 }
@@ -97,8 +96,6 @@ function update(req, res) {
   const { task_id } = req.params;
 
   const { content, title, date, completed } = req.body;
-
-  console.log(req.body);
 
   const getTaskSql = "SELECT * FROM tasks WHERE id = ?";
   connection.query(getTaskSql, [task_id], (getErr, getResults) => {
@@ -117,7 +114,9 @@ function update(req, res) {
     if (req.user_id !== parseInt(existingData.user_id)) {
       return res
         .status(403)
-        .json({ error: "You are not authorized to add tasks for this user" });
+        .json({
+          error: "You are not authorized to update tasks for this user",
+        });
     }
 
     if (date) {
@@ -155,7 +154,6 @@ function update(req, res) {
         }
 
         res.json(results);
-        console.log("Task updated successfully!");
       }
     );
   });
@@ -164,13 +162,13 @@ function update(req, res) {
 //delete
 function destroy(req, res) {
   const { task_id } = req.params;
+  //TODO TOKEN CHECK
   const sql = "DELETE FROM tasks WHERE id = ?";
   connection.query(sql, [task_id], (err, results) => {
     if (err) return res.status(500).json({ error: "Database query failed" });
     if (results.affectedRows === 0)
       return res.status(404).json({ error: "Task not found" });
     res.json(results);
-    console.log("Task deleted successfully!");
   });
 }
 

@@ -24,4 +24,27 @@ generalRouter.delete(
   tasksController.destroy
 );
 
+//DAILY TASKS CRUD
+const dailyTasksController = require("../controllers/dailyTasksController");
+//index
+generalRouter.get(
+  "/daily/tasks/:user_id",
+  tokenAuthorization,
+  dailyTasksController.index
+);
+
+//show
+generalRouter.get(
+  "/daily/task/:task_id",
+  tokenAuthorization,
+  dailyTasksController.show
+);
+
+//store
+generalRouter.post(
+  "/daily/addtask",
+  tokenAuthorization,
+  dailyTasksController.store
+);
+
 module.exports = generalRouter;
