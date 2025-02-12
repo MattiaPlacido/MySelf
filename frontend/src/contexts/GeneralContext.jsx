@@ -81,6 +81,28 @@ export function GeneralContextProvider({ children }) {
       });
   }
 
+  //delete task
+  function deleteTask(taskId) {
+    const token = localStorage.getItem("myToken");
+    if (!token) {
+      setError("No token found. Please log in.");
+      return;
+    }
+    fetch(`${urlBackEnd}/general/tasks/${taskId}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }).then((res) => {
+      if (!res.ok) {
+        throw new Error("Failed to delete task. Please try again.");
+      }
+      retrieveTasks();
+    });
+  }
+
+  //update task
+
   //DATA LOADING
   useEffect(() => {
     if (userId) {
@@ -93,6 +115,7 @@ export function GeneralContextProvider({ children }) {
     setTasks,
     retrieveTasks,
     addTask,
+    deleteTask,
   };
   const status = {
     loading,

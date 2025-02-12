@@ -19,6 +19,7 @@ export function UserContextProvider({ children }) {
       }
     }
   }
+  //CHECK TOKEN EVERY MINUTE
   useEffect(() => {
     const interval = setInterval(() => {
       checkTokenExpiration();
@@ -27,7 +28,7 @@ export function UserContextProvider({ children }) {
     return () => clearInterval(interval);
   }, []);
 
-  //USER FUNCTIONS
+  //FUNZIONI
   async function login(email) {
     try {
       const response = await fetch(`${urlBackEnd}/user/emailToId`, {
@@ -68,6 +69,10 @@ export function UserContextProvider({ children }) {
       return null;
     }
   }
+
+  useEffect(() => {
+    setUserIdFromToken();
+  }, []);
 
   function logout() {
     setUserId(null);

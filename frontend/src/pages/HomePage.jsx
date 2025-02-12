@@ -6,7 +6,7 @@ export default function HomePage() {
 
   return (
     <>
-      {userId !== 0 ? (
+      {userId ? (
         <>
           <h1 className="text-white">Loggato. UserId : {userId}</h1>
           <TaskList />

@@ -1,6 +1,8 @@
 import { useGeneralContext } from "../contexts/GeneralContext";
 import { Spinner as BootstrapSpinner } from "react-bootstrap";
 import AddTaskButton from "../components/AddTaskButton";
+import DeleteTaskButton from "./DeleteTaskButton";
+import { UpdateTaskButton } from "./UpdateTaskButton";
 
 export default function TaskList() {
   const { userTasks, status } = useGeneralContext();
@@ -17,20 +19,29 @@ export default function TaskList() {
 
   return (
     <div>
-      <div className="container border p-4 text-white">
-        <h5>Your tasks</h5>
+      <div className="border rounded pt-2 text-white">
+        <div className="px-3 d-flex justify-content-between py-3">
+          <h5>Your tasks</h5>
+          <AddTaskButton className="position" />
+        </div>
         {tasks.map((task, index) => (
-          <div key={index}>
-            <h6>{task.title}</h6>
-            <p>{task.content}</p>
-            {task.date && (
-              <p>For : {new Date(task.date).toLocaleDateString()}</p>
-            )}
+          <div
+            key={index}
+            className="border-light border-top border-bottom p-3 d-flex justify-content-between"
+          >
+            <div>
+              <h6 className="pb-2">{task.title}</h6>
+              <p>{task.content}</p>
+              {task.date && (
+                <p>For : {new Date(task.date).toLocaleDateString()}</p>
+              )}
+            </div>
+            <div className="d-flex flex-column justify-content-between">
+              <UpdateTaskButton taskId={task.id} />
+              <DeleteTaskButton taskId={task.id} />
+            </div>
           </div>
         ))}
-        <div className="d-flex justify-content-end p-2">
-          <AddTaskButton />
-        </div>
       </div>
     </div>
   );

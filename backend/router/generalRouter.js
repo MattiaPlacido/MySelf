@@ -9,5 +9,17 @@ const tasksController = require("../controllers/tasksController");
 generalRouter.get("/tasks/:user_id", tokenAuthorization, tasksController.index);
 //store
 generalRouter.post("/addtask", tokenAuthorization, tasksController.store);
+//update
+generalRouter.put(
+  "/updatetask/:task_id",
+  tokenAuthorization,
+  tasksController.update
+);
+//delete
+generalRouter.delete(
+  "/tasks/:task_id",
+  tokenAuthorization,
+  tasksController.destroy
+);
 
 module.exports = generalRouter;

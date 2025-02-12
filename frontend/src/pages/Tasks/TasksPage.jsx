@@ -3,8 +3,6 @@ import { useUserContext } from "../../contexts/UserContext";
 import { useGeneralContext } from "../../contexts/GeneralContext";
 import TaskList from "../../components/TaskList";
 
-const urlBackEnd = import.meta.env.API_URL;
-
 const initialData = {
   title: "Titolo prova",
   content: "Contenuto prova",
