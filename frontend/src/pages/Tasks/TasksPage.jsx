@@ -1,28 +1,24 @@
 import { useState, useEffect } from "react";
 import { useUserContext } from "../../contexts/UserContext";
+import { useNavigate } from "react-router-dom";
 import { useGeneralContext } from "../../contexts/GeneralContext";
-import TaskList from "./TaskList";
-
-const initialData = {
-  title: "Titolo prova",
-  content: "Contenuto prova",
-  hasDeadLine: false,
-  date: 0,
-};
+import TaskList from "../../components/TaskList";
+import AddTaskButton from "./AddTaskButton";
 
 export default function TasksPage() {
-  const { userTasks, status } = useGeneralContext();
-  const { setTasks } = userTasks;
-  const { loading, error } = status;
+  const navigate = useNavigate();
 
+  const { userTasks, status } = useGeneralContext();
+  const { setTasks, tasks = [] } = userTasks;
+  const { loading, error } = status;
   const { userId } = useUserContext();
 
   useEffect(() => {
     if (!userId) {
       setTasks([]);
-      window.location.href = "/login";
+      navigate("/login");
     }
-  }, []);
+  }, [userId]);
 
   if (error) {
     return <h1 className="text-white">Error: {error}</h1>;
@@ -31,7 +27,7 @@ export default function TasksPage() {
   return (
     <>
       <div className="">
-        <TaskList />
+        <TaskList tasksData={tasks} Button={AddTaskButton} loading={loading} />
       </div>
     </>
   );

@@ -48,7 +48,11 @@ generalRouter.post(
 );
 
 //update
-generalRouter.put("/daily/updatetask/:task_id", dailyTasksController.update);
+generalRouter.put(
+  "/daily/updatetask/:task_id",
+  tokenAuthorization,
+  dailyTasksController.update
+);
 
 //delete
 generalRouter.delete(

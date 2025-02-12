@@ -31,7 +31,7 @@ export default function TaskItem({ task }) {
         />
         <div>
           <p>{task.content}</p>
-          {task.date && <p>For : {new Date(task.date).toLocaleDateString()}</p>}
+          {task.date && <p>Due : {new Date(task.date).toLocaleDateString()}</p>}
         </div>
       </div>
       <div className="d-flex flex-column justify-content-between">

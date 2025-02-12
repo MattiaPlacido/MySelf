@@ -13,7 +13,7 @@ import DefaultLayout from "./layouts/DefaultLayout/DefaultLayout";
 import HomePage from "./pages/HomePage";
 import FinancePage from "./pages/FinancePage";
 import TasksPage from "./pages/tasks/TasksPage";
-import DailyPage from "./pages/DailyPage";
+import DailyPage from "./pages/daily/DailyPage";
 import MonthlyPage from "./pages/MonthPage";
 import NotFoundPage from "./pages/NotFoundPage";
 import LoginPage from "./pages/LoginPage";
