@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useUserContext } from "../../contexts/UserContext";
 import { useGeneralContext } from "../../contexts/GeneralContext";
-import TaskList from "../../components/TaskList";
+import TaskList from "./TaskList";
 
 const initialData = {
   title: "Titolo prova",

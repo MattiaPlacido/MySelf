@@ -15,31 +15,66 @@ export function GeneralContextProvider({ children }) {
   const [tasks, setTasks] = useState([]);
   //TASKS FUNCTIONS
   //retrive tasks
-  async function retrieveTasks() {
+  function retrieveTasks() {
     setLoading(true);
-    try {
-      const token = localStorage.getItem("myToken");
-      if (!token) {
-        setError("No token found. Please log in.");
-        return;
-      }
 
-      const response = await fetch(`${urlBackEnd}/general/tasks/${userId}`, {
+    const token = localStorage.getItem("myToken");
+    if (!token) {
+      setError("No token found. Please log in.");
+      return;
+    }
+
+    fetch(`${urlBackEnd}/general/tasks/${userId}`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.error) {
+          setError(data.error);
+          return;
+        }
+        setTasks(data);
+      })
+      .catch((error) => {
+        setError(error.message);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }
+
+  //retrieve single task
+  async function retrieveSingleTask(taskId) {
+    setLoading(true);
+
+    const token = localStorage.getItem("myToken");
+    if (!token) {
+      setError("No token found. Please log in.");
+      return null;
+    }
+
+    try {
+      const res = await fetch(`${urlBackEnd}/general/task/${taskId}`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
 
-      if (!response.ok) {
-        throw new Error("Failed to retrieve tasks. Please try again.");
+      const data = await res.json();
+
+      if (data.error) {
+        setError(data.error);
+        return null;
       }
 
-      const tasksData = await response.json();
-
-      setTasks(tasksData);
+      return data;
     } catch (error) {
       setError(error.message);
+      return null;
     } finally {
       setLoading(false);
     }
@@ -102,6 +137,54 @@ export function GeneralContextProvider({ children }) {
   }
 
   //update task
+  function updateTask(taskId, taskData) {
+    const token = localStorage.getItem("myToken");
+    if (!token) {
+      setError("No token found. Please log in.");
+      return;
+    }
+    fetch(`${urlBackEnd}/general/updatetask/${taskId}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        content: taskData.content,
+        title: taskData.title,
+        date: taskData.date,
+      }),
+    }).then((res) => {
+      if (!res.ok) {
+        throw new Error("Failed to update task. Please try again.");
+      }
+      retrieveTasks();
+    });
+  }
+
+  //update task status
+  function updateTaskStatus(taskId, status) {
+    const token = localStorage.getItem("myToken");
+    if (!token) {
+      setError("No token found. Please log in.");
+      return;
+    }
+    fetch(`${urlBackEnd}/general/updatetask/${taskId}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        completed: status,
+      }),
+    }).then((res) => {
+      if (!res.ok) {
+        throw new Error("Failed to update task's status. Please try again.");
+      }
+      // retrieveTasks();
+    });
+  }
 
   //DATA LOADING
   useEffect(() => {
@@ -114,7 +197,10 @@ export function GeneralContextProvider({ children }) {
     tasks,
     setTasks,
     retrieveTasks,
+    retrieveSingleTask,
     addTask,
+    updateTask,
+    updateTaskStatus,
     deleteTask,
   };
   const status = {

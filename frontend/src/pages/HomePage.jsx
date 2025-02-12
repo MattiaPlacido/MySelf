@@ -1,5 +1,5 @@
 import { useUserContext } from "../contexts/UserContext";
-import TaskList from "../components/TaskList";
+import TaskList from "./Tasks/TaskList";
 
 export default function HomePage() {
   const { userId } = useUserContext();

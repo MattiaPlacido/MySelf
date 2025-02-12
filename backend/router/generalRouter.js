@@ -7,6 +7,8 @@ const tasksController = require("../controllers/tasksController");
 
 //index
 generalRouter.get("/tasks/:user_id", tokenAuthorization, tasksController.index);
+//show
+generalRouter.get("/task/:task_id", tokenAuthorization, tasksController.show);
 //store
 generalRouter.post("/addtask", tokenAuthorization, tasksController.store);
 //update

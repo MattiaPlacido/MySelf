@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useGeneralContext } from "../contexts/GeneralContext";
+import { useGeneralContext } from "../../contexts/GeneralContext";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import Form from "react-bootstrap/Form";
@@ -33,7 +33,7 @@ export default function AddTaskButton() {
   function handleSubmit(e) {
     e.preventDefault();
     if (formData.title == "") {
-      alert("Il titolo è vuoto.");
+      alert("Title cannot be empty");
       return;
     }
 

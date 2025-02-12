@@ -6,6 +6,10 @@ const connection = require("../db_connection");
 function index(req, res) {
   const { user_id } = req.params;
 
+  if (!user_id || isNaN(user_id) || user_id < 1) {
+    return res.status(400).json({ error: "Invalid user_id" });
+  }
+
   if (req.user_id !== parseInt(user_id)) {
     return res
       .status(403)
@@ -24,18 +28,42 @@ function index(req, res) {
 }
 
 //show
+function show(req, res) {
+  const { task_id } = req.params;
+
+  if (!task_id || isNaN(task_id) || task_id < 1) {
+    return res.status(400).json({ error: "Invalid task id" });
+  }
+
+  const sql = "SELECT * FROM tasks WHERE id = ?";
+  connection.query(sql, [task_id], (err, results) => {
+    if (err) return res.status(500).json({ error: "Database query failed" });
+    if (results.length === 0)
+      return res.status(404).json({ error: "Task not found" });
+
+    if (req.user_id !== parseInt(results[0].user_id)) {
+      return res
+        .status(403)
+        .json({ error: "You are not authorized to view these tasks" });
+    }
+
+    res.json(results[0]);
+  });
+}
 
 //store
 function store(req, res) {
-  let { content = null, title, date = null, userId } = req.body;
+  let { content = null, title, date = null, user_id } = req.body;
 
-  if (!title || !userId) {
-    return res
-      .status(400)
-      .json({ error: "Missing essential parameters (title, userId)" });
+  if (!user_id || isNaN(user_id) || user_id < 1) {
+    return res.status(400).json({ error: "Invalid user id" });
   }
 
-  if (req.user_id !== parseInt(userId)) {
+  if (!title) {
+    return res.status(400).json({ error: "Missing title" });
+  }
+
+  if (req.user_id !== parseInt(user_id)) {
     return res
       .status(403)
       .json({ error: "You are not authorized to add tasks for this user" });
@@ -56,7 +84,7 @@ function store(req, res) {
 
   connection.query(
     sql,
-    [content, title, date, userId, false],
+    [content, title, date, user_id, false],
     (err, results) => {
       if (err) return res.status(500).json({ error: "Database query failed" });
       res.json(results);
@@ -65,52 +93,67 @@ function store(req, res) {
   );
 }
 
-//update
 function update(req, res) {
   const { task_id } = req.params;
 
-  //GET EXISTING TASK DATA
+  const { content, title, date, completed } = req.body;
+
+  console.log(req.body);
+
   const getTaskSql = "SELECT * FROM tasks WHERE id = ?";
   connection.query(getTaskSql, [task_id], (getErr, getResults) => {
-    if (getErr)
+    if (getErr) {
       return res
         .status(500)
-        .json({ error: "Failed to fetch existing property data" });
-    if (getResults.length === 0)
-      return res.status(404).json({ error: "Recensione non trovata" });
+        .json({ error: "Failed to fetch existing task data" });
+    }
+
+    if (getResults.length === 0) {
+      return res.status(404).json({ error: "Task not found" });
+    }
+
+    const existingData = getResults[0];
+
+    if (req.user_id !== parseInt(existingData.user_id)) {
+      return res
+        .status(403)
+        .json({ error: "You are not authorized to add tasks for this user" });
+    }
 
     if (date) {
       const dateObject = new Date(date);
-
       const today = new Date();
       today.setHours(0, 0, 0, 0);
+
       if (isNaN(dateObject.getTime()) || dateObject < today) {
         return res.status(400).json({ error: "Date is invalid" });
       }
     }
 
-    if (completed !== true && completed !== false) {
+    if (completed !== undefined && completed !== true && completed !== false) {
       return res.status(400).json({ error: "Completed should be a boolean" });
     }
 
-    const existingData = getResults[0];
-    const {
-      content = existingData.content,
-      title = existingData.title,
-      date = existingData.date,
-      completed = existingData.completed,
-    } = req.body;
+    const finalContent = content !== undefined ? content : existingData.content;
+    const finalTitle = title !== undefined ? title : existingData.title;
+    const finalDate = date !== undefined ? date : existingData.date;
+    const finalCompleted =
+      completed !== undefined ? completed : existingData.completed;
 
-    const sql =
+    const updateSql =
       "UPDATE tasks SET content = ?, title = ?, date = ?, completed = ? WHERE id = ?";
     connection.query(
-      sql,
-      [content, title, date, completed, task_id],
+      updateSql,
+      [finalContent, finalTitle, finalDate, finalCompleted, task_id],
       (err, results) => {
-        if (err)
+        if (err) {
           return res.status(500).json({ error: "Database query failed" });
-        if (results.affectedRows === 0)
+        }
+
+        if (results.affectedRows === 0) {
           return res.status(404).json({ error: "Task not found" });
+        }
+
         res.json(results);
         console.log("Task updated successfully!");
       }
@@ -131,4 +174,4 @@ function destroy(req, res) {
   });
 }
 
-module.exports = { index, store, update, destroy };
+module.exports = { index, show, store, update, destroy };

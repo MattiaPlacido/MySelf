@@ -1,7 +1,7 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import Button from "react-bootstrap/Button";
-import { useGeneralContext } from "../contexts/GeneralContext";
+import { useGeneralContext } from "../../contexts/GeneralContext";
 
 const urlBackEnd = import.meta.env.VITE_API_URL;
 
