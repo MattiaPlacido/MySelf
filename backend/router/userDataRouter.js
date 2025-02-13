@@ -14,6 +14,7 @@ const connection = require("../db_connection");
 //Retrieve emails
 //Route: GET /user/emails
 userDataRouter.get("/emails", (req, res) => {
+  console.log("Request");
   //Query to get all emails
   const sql = "SELECT email FROM users";
 

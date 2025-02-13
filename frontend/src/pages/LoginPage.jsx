@@ -2,7 +2,7 @@ import { useState } from "react";
 import { NavLink } from "react-router-dom";
 import { useUserContext } from "../contexts/UserContext";
 
-const urlBackEnd = import.meta.env.VITE_API_URL;
+//COULD BE DIVIDED IN LOGIN FORM AND LOGIN PAGE
 
 const initialLoginData = {
   email: "",
@@ -24,68 +24,7 @@ export default function LoginPage() {
 
   async function handleSubmit() {
     const { email, password } = loginData;
-
-    // CHECKING EMAIL EXISTENCE
-    try {
-      const emailResponse = await fetch(`${urlBackEnd}/user/emails`, {
-        method: "GET",
-      });
-
-      if (!emailResponse.ok) {
-        throw new Error("Failed to retrieve emails. Please try again.");
-      }
-
-      const registeredEmails = await emailResponse.json();
-
-      let emailExists = false;
-      for (let i = 0; i < registeredEmails.length; i++) {
-        registeredEmails[i].email.trim().toLowerCase() ==
-        email.trim().toLowerCase()
-          ? (emailExists = true)
-          : "";
-      }
-      if (!emailExists) {
-        alert("This email is not registered yet.");
-        return;
-      }
-    } catch (error) {
-      console.error("Error during email validation:", error.message);
-      alert("An error occurred while checking email availability.");
-      return;
-    }
-
-    if (password.length < 1) {
-      alert("Password is empty.");
-      return;
-    }
-    //EMAIL EXISTS AND PASSWORD IS NOT EMPTY
-
-    //LOGIN ATTEMPT
-    try {
-      const loginResponse = await fetch(`${urlBackEnd}/user/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
-      });
-
-      if (!loginResponse.ok) {
-        setLoginData(initialLoginData);
-        throw new Error("Login failed. Invalid credentials.");
-      }
-
-      const loginResponseData = await loginResponse.json();
-
-      localStorage.setItem("myToken", loginResponseData.token);
-
-      login(email);
-
-      window.location.href = "/";
-    } catch (error) {
-      console.error("Error during login:", error.message);
-      alert("Login failed. Please check your credentials and try again.");
-    }
+    login(email, password);
   }
 
   return (
@@ -102,6 +41,7 @@ export default function LoginPage() {
           name="email"
           onChange={handleFormChange}
           value={loginData.email}
+          required
         />
       </div>
       <div className="mb-5">
@@ -115,6 +55,7 @@ export default function LoginPage() {
           name="password"
           onChange={handleFormChange}
           value={loginData.password}
+          required
         />
         <NavLink
           to="/register"

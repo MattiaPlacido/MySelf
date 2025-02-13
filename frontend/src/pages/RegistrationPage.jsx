@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { NavLink } from "react-router-dom";
-
-const urlBackEnd = import.meta.env.API_URL;
+import { useUserContext } from "../contexts/UserContext";
 
 const initialFormData = {
   name: "",
@@ -12,83 +11,12 @@ const initialFormData = {
 
 export default function RegistrationPage() {
   const [formData, setFormData] = useState(initialFormData);
+  const { register } = useUserContext();
 
   async function handleSubmit() {
     const { name, surname, email, password } = formData;
-
-    if (
-      name.length < 3 ||
-      name.length > 40 ||
-      surname.length < 3 ||
-      surname.length > 40
-    ) {
-      alert("Name or surname are too short or too long! (3-40 characters)");
-      return;
-    }
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      alert("Please enter a valid email address!");
-      return;
-    }
-
-    try {
-      const emailResponse = await fetch(`${urlBackEnd}/user/emails`, {
-        method: "GET",
-      });
-
-      if (!emailResponse.ok) {
-        throw new Error("Failed to retrieve emails. Please try again.");
-      }
-      const registeredEmails = await emailResponse.json();
-      let emailExists = false;
-      for (let i = 0; i < registeredEmails.length; i++) {
-        registeredEmails[i].email.trim().toLowerCase() ==
-        email.trim().toLowerCase()
-          ? (emailExists = true)
-          : console.log(registeredEmails[i], email);
-      }
-      if (emailExists) {
-        alert("This email is already registered!");
-        return;
-      }
-    } catch (error) {
-      console.error("Error during email validation:", error.message);
-      alert("An error occurred while checking email availability.");
-      return;
-    }
-
-    const passwordRegex =
-      /^(?=.*[0-9])(?=.*[!@#$%^&*()_\-+=])[A-Za-z0-9!@#$%^&*()_\-+=]{8,32}$/;
-    if (!passwordRegex.test(password)) {
-      alert(
-        "Password needs to be between 8 and 32 characters, and include at least 1 number and 1 special character (e.g., @, _)."
-      );
-      return;
-    }
-
-    try {
-      const registerResponse = await fetch(`${urlBackEnd}/user/register`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ name, surname, email, password }),
-      });
-
-      const data = await registerResponse.json();
-
-      if (!registerResponse.ok) {
-        throw new Error(data.error || "Something went wrong");
-      }
-
-      alert("Registration successful!");
-      console.log("Server response:", data);
-      window.location.href = "/login";
-    } catch (error) {
-      console.error("Error during registration:", error);
-      alert("Error during registration");
-    }
+    //controls are already in the registration function
+    register(name, surname, email, password);
   }
 
   function handleFormChange(e) {
@@ -116,6 +44,7 @@ export default function RegistrationPage() {
               id="registration-form-name"
               onChange={handleFormChange}
               value={formData.name}
+              required
             />
           </div>
           <div className="w-75">
@@ -132,6 +61,7 @@ export default function RegistrationPage() {
               id="registration-form-surname"
               onChange={handleFormChange}
               value={formData.surname}
+              required
             />
           </div>
         </div>
@@ -146,6 +76,7 @@ export default function RegistrationPage() {
             name="email"
             onChange={handleFormChange}
             value={formData.email}
+            required
           />
         </div>
         <div className=" mb-5">
@@ -162,6 +93,7 @@ export default function RegistrationPage() {
             name="password"
             onChange={handleFormChange}
             value={formData.password}
+            required
           />
           <NavLink
             to="/login"

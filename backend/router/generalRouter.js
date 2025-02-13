@@ -35,8 +35,6 @@ generalRouter.delete(
 //DAILY TASKS CRUD
 //Importing Daily Tasks controller object to use its functions
 const dailyTasksController = require("../controllers/dailyTasksController");
-// Importing Daily Tasks controller to handle daily task-related operations
-const dailyTasksController = require("../controllers/dailyTasksController");
 
 //Get all daily tasks by user id
 generalRouter.get(

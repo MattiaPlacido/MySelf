@@ -14,16 +14,18 @@ export function GeneralContextProvider({ children }) {
   //TASKS
   const [tasks, setTasks] = useState([]);
   //TASKS FUNCTIONS
-  //retrive tasks
+  //Retrieve tasks for the logged user
   function retrieveTasks() {
     setLoading(true);
 
+    //Get authentication token from local storage
     const token = localStorage.getItem("myToken");
     if (!token) {
       setError("No token found. Please log in.");
       return;
     }
 
+    //Backend call to get the tasks
     fetch(`${urlBackEnd}/general/tasks/${userId}`, {
       method: "GET",
       headers: {
@@ -36,6 +38,7 @@ export function GeneralContextProvider({ children }) {
           setError(data.error);
           return;
         }
+        //Set the tasks from the retrieved data
         setTasks(data);
       })
       .catch((error) => {
@@ -46,10 +49,12 @@ export function GeneralContextProvider({ children }) {
       });
   }
 
-  //retrieve single task
+  //Retrieve a single task by its id
+  //Needs to be asyncronous because its returning something
   async function retrieveSingleTask(taskId) {
     setLoading(true);
 
+    //Get authentication token from local storage
     const token = localStorage.getItem("myToken");
     if (!token) {
       setError("No token found. Please log in.");
@@ -57,6 +62,7 @@ export function GeneralContextProvider({ children }) {
     }
 
     try {
+      //Backend call to get the task
       const res = await fetch(`${urlBackEnd}/general/task/${taskId}`, {
         method: "GET",
         headers: {
@@ -80,15 +86,16 @@ export function GeneralContextProvider({ children }) {
     }
   }
 
-  //add task
+  //Add a new task
   function addTask(task) {
+    //Get authentication token from local storage
     const token = localStorage.getItem("myToken");
     if (!token) {
       setError("No token found. Please log in.");
       return;
     }
     setLoading(true);
-
+    //Get authentication token from local storage
     fetch(`${urlBackEnd}/general/addtask`, {
       method: "POST",
       headers: {
@@ -105,7 +112,7 @@ export function GeneralContextProvider({ children }) {
       .then((res) => res.json())
       .then((data) => {
         data
-          ? retrieveTasks()
+          ? retrieveTasks() //Fetch again the tasks if its added successfully
           : alert("An error has occurred sending the request.");
       })
       .catch((error) => {
@@ -116,13 +123,15 @@ export function GeneralContextProvider({ children }) {
       });
   }
 
-  //delete task
+  //Delete a task by its ID
   function deleteTask(taskId) {
+    //Get authentication token from local storage
     const token = localStorage.getItem("myToken");
     if (!token) {
       setError("No token found. Please log in.");
       return;
     }
+    //DELETE request to the backend to delete specified task
     fetch(`${urlBackEnd}/general/tasks/${taskId}`, {
       method: "DELETE",
       headers: {
@@ -132,17 +141,19 @@ export function GeneralContextProvider({ children }) {
       if (!res.ok) {
         throw new Error("Failed to delete task. Please try again.");
       }
-      retrieveTasks();
+      retrieveTasks(); //Fetch again the tasks if its deleted successfully
     });
   }
 
-  //update task
+  //Update a task by its ID
   function updateTask(taskId, taskData) {
+    //Get authentication token from local storage
     const token = localStorage.getItem("myToken");
     if (!token) {
       setError("No token found. Please log in.");
       return;
     }
+    //PUT request to the backend to update specified task
     fetch(`${urlBackEnd}/general/updatetask/${taskId}`, {
       method: "PUT",
       headers: {
@@ -158,17 +169,19 @@ export function GeneralContextProvider({ children }) {
       if (!res.ok) {
         throw new Error("Failed to update task. Please try again.");
       }
-      retrieveTasks();
+      retrieveTasks(); //Fetch again the tasks if its updated successfully
     });
   }
 
-  //update task status
+  //Update a tasks completion status by its ID
   function updateTaskStatus(taskId, status) {
+    //Get authentication token from local storage
     const token = localStorage.getItem("myToken");
     if (!token) {
       setError("No token found. Please log in.");
       return;
     }
+    //PUT request to the backend to update a tasks status
     fetch(`${urlBackEnd}/general/updatetask/${taskId}`, {
       method: "PUT",
       headers: {
@@ -186,13 +199,14 @@ export function GeneralContextProvider({ children }) {
     });
   }
 
-  //DATA LOADING
+  //Every time userId changes // when the component mounts if the userId is present fetch the corresponding tasks
   useEffect(() => {
     if (userId) {
       retrieveTasks();
     }
   }, [userId]);
 
+  //Exporting userTasks and its functions
   const userTasks = {
     tasks,
     setTasks,
@@ -215,4 +229,5 @@ export function GeneralContextProvider({ children }) {
   );
 }
 
+//Exporting useContext so that other components can access the provided values
 export const useGeneralContext = () => useContext(GeneralContext);
