@@ -4,8 +4,8 @@ import UpdateTaskButton from "./UpdateTaskButton";
 import { useState } from "react";
 import { useGeneralContext } from "../../contexts/GeneralContext";
 
-export default function TaskItem({ task }) {
-  const [completionStatus, setCompletionStatus] = useState(task.completed);
+export default function TaskItem({ taskData }) {
+  const [completionStatus, setCompletionStatus] = useState(taskData.completed);
 
   const { userTasks } = useGeneralContext();
   const { updateTaskStatus } = userTasks;
@@ -13,16 +13,16 @@ export default function TaskItem({ task }) {
   function handleTaskCompletion(event) {
     const newStatus = event.target.checked;
     setCompletionStatus(newStatus);
-    updateTaskStatus(task.id, newStatus);
+    updateTaskStatus(taskData.id, newStatus);
   }
 
   return (
     <div className="border-light border-top border-bottom p-3 d-flex justify-content-between">
-      <div className="row">
-        <h6 className="pb-2 col">{task.title}</h6>
+      <div className="row text-white">
+        <h6 className="pb-2 col">{taskData.title}</h6>
         <Form.Check
           type="checkbox"
-          id={`task-checkbox-${task.id}`}
+          id={`task-checkbox-${taskData.id}`}
           className="me-3 col"
           label="Done"
           name="completionStatus"
@@ -30,13 +30,15 @@ export default function TaskItem({ task }) {
           onChange={handleTaskCompletion}
         />
         <div>
-          <p>{task.content}</p>
-          {task.date && <p>Due : {new Date(task.date).toLocaleDateString()}</p>}
+          <p>{taskData.content}</p>
+          {taskData.date && (
+            <p>Due : {new Date(taskData.date).toLocaleDateString()}</p>
+          )}
         </div>
       </div>
       <div className="d-flex flex-column justify-content-between">
-        <UpdateTaskButton taskId={task.id} />
-        <DeleteTaskButton taskId={task.id} />
+        <UpdateTaskButton taskId={taskData.id} />
+        <DeleteTaskButton taskId={taskData.id} />
       </div>
     </div>
   );

@@ -11,9 +11,9 @@ export function GeneralContextProvider({ children }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  //TASKS
+  //* ==================== TASKS SECTION ==================== */
   const [tasks, setTasks] = useState([]);
-  //TASKS FUNCTIONS
+
   //Retrieve tasks for the logged user
   function retrieveTasks() {
     setLoading(true);
@@ -95,7 +95,7 @@ export function GeneralContextProvider({ children }) {
       return;
     }
     setLoading(true);
-    //Get authentication token from local storage
+    //POST call to the backend to add the task
     fetch(`${urlBackEnd}/general/addtask`, {
       method: "POST",
       headers: {
@@ -198,11 +198,172 @@ export function GeneralContextProvider({ children }) {
       // retrieveTasks();
     });
   }
+  //* ==================== END TASKS SECTION ==================== */
+
+  //* ==================== DAILY TASKS SECTION ==================== */
+  const [dailyTasks, setDailyTasks] = useState([]);
+
+  function retrieveDailyTasks() {
+    setLoading(true);
+
+    //Get authentication token from local storage
+    const token = localStorage.getItem("myToken");
+    if (!token) {
+      setError("No token found. Please log in.");
+      return;
+    }
+
+    fetch(`${urlBackEnd}/general/daily/tasks/${userId}`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.error) {
+          setError(data.error);
+          return;
+        }
+        //Set the tasks from the retrieved data
+        setDailyTasks(data);
+      })
+      .catch((error) => {
+        setError(error.message);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+
+    //Backend call to get the tasks
+  }
+
+  async function retrieveSingleDailyTask(taskId) {
+    setLoading(true);
+
+    //Get authentication token from local storage
+    const token = localStorage.getItem("myToken");
+    if (!token) {
+      setError("No token found. Please log in.");
+      return null;
+    }
+
+    try {
+      //Backend call to get the task
+      const res = await fetch(`${urlBackEnd}/general/daily/task/${taskId}`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await res.json();
+
+      if (data.error) {
+        setError(data.error);
+        return null;
+      }
+
+      return data;
+    } catch (error) {
+      setError(error.message);
+      return null;
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  function addDailyTask(task) {
+    //Get authentication token from local storage
+    const token = localStorage.getItem("myToken");
+    if (!token) {
+      setError("No token found. Please log in.");
+      return;
+    }
+    setLoading(true);
+    //POST call to the backend to add the task
+    fetch(`${urlBackEnd}/general/daily/addtask`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        content: task.content || null,
+        title: task.title,
+        time: task.time || null,
+        user_id: userId,
+      }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        data
+          ? retrieveDailyTasks() //Fetch again the tasks if its added successfully
+          : alert("An error has occurred sending the request.");
+      })
+      .catch((error) => {
+        setError(error.message);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }
+
+  function deleteDailyTask(taskId) {
+    //Get authentication token from local storage
+    const token = localStorage.getItem("myToken");
+    if (!token) {
+      setError("No token found. Please log in.");
+      return;
+    }
+    //DELETE request to the backend to delete specified task
+    fetch(`${urlBackEnd}/general/daily/tasks/${taskId}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }).then((res) => {
+      if (!res.ok) {
+        throw new Error("Failed to delete task. Please try again.");
+      }
+      retrieveDailyTasks(); //Fetch again the tasks if its deleted successfully
+    });
+  }
+
+  function updateDailyTask(taskId, taskData) {
+    //Get authentication token from local storage
+    const token = localStorage.getItem("myToken");
+    if (!token) {
+      setError("No token found. Please log in.");
+      return;
+    }
+    //PUT request to the backend to update specified task
+    fetch(`${urlBackEnd}/general/daily/updatetask/${taskId}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        content: taskData.content,
+        title: taskData.title,
+        time: taskData.time,
+      }),
+    }).then((res) => {
+      if (!res.ok) {
+        throw new Error("Failed to update task. Please try again.");
+      }
+      retrieveDailyTasks(); //Fetch again the tasks if its updated successfully
+    });
+  }
+
+  //* ==================== END DAILY TASKS SECTION ==================== */
 
   //Every time userId changes // when the component mounts if the userId is present fetch the corresponding tasks
   useEffect(() => {
     if (userId) {
       retrieveTasks();
+      retrieveDailyTasks();
     }
   }, [userId]);
 
@@ -217,13 +378,23 @@ export function GeneralContextProvider({ children }) {
     updateTaskStatus,
     deleteTask,
   };
+  const userDailyTasks = {
+    dailyTasks,
+    setDailyTasks,
+    retrieveDailyTasks,
+    retrieveSingleDailyTask,
+    addDailyTask,
+    deleteDailyTask,
+    updateDailyTask,
+  };
+
   const status = {
     loading,
     error,
   };
 
   return (
-    <GeneralContext.Provider value={{ userTasks, status }}>
+    <GeneralContext.Provider value={{ userTasks, userDailyTasks, status }}>
       {children}
     </GeneralContext.Provider>
   );

@@ -1,7 +1,11 @@
 import { Spinner as BootstrapSpinner } from "react-bootstrap";
-import TaskItem from "../pages/Tasks/TaskItem";
 
-export default function TaskList({ tasksData = [], Button, loading }) {
+export default function TaskList({
+  tasksData = [],
+  Button,
+  TaskItem,
+  loading,
+}) {
   if (loading) {
     return (
       <div className="d-flex justify-content-center align-items-center h-100">
@@ -12,13 +16,13 @@ export default function TaskList({ tasksData = [], Button, loading }) {
 
   return (
     <div>
-      <div className="border rounded pt-2 text-white">
-        <div className="px-3 d-flex justify-content-between py-3">
+      <div className="border rounded pt-2 ">
+        <div className="px-3 d-flex justify-content-between py-3 text-white">
           <h5>Your tasks</h5>
           {Button && <Button />}
         </div>
         {tasksData.map((task, index) => (
-          <TaskItem task={task} key={index} />
+          <TaskItem taskData={task} key={index} />
         ))}
       </div>
     </div>

@@ -14,7 +14,6 @@ import HomePage from "./pages/HomePage";
 import FinancePage from "./pages/FinancePage";
 import TasksPage from "./pages/tasks/TasksPage";
 import DailyPage from "./pages/daily/DailyPage";
-import MonthlyPage from "./pages/MonthPage";
 import NotFoundPage from "./pages/NotFoundPage";
 import LoginPage from "./pages/LoginPage";
 import RegistrationPage from "./pages/RegistrationPage";
@@ -30,7 +29,6 @@ function App() {
               <Route path="tasks" element={<TasksPage />} />
               <Route path="finance" element={<FinancePage />} />
               <Route path="routine" element={<DailyPage />} />
-              {/* <Route path="monthly" element={<MonthlyPage />} /> */}
               <Route path="login" element={<LoginPage />} />
               <Route path="register" element={<RegistrationPage />} />
               <Route path="*" element={<NotFoundPage />} />

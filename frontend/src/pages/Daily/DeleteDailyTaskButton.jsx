@@ -3,15 +3,13 @@ import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import Button from "react-bootstrap/Button";
 import { useGeneralContext } from "../../contexts/GeneralContext";
 
-export default function DeleteTaskButton({ taskId }) {
-  const { userTasks } = useGeneralContext();
-  const { deleteTask } = userTasks;
+export default function DeleteDailyTaskButton({ taskId }) {
+  const { userDailyTasks } = useGeneralContext();
+  const { deleteDailyTask } = userDailyTasks;
 
   function handleDelete() {
-    deleteTask(taskId);
+    deleteDailyTask(taskId);
   }
-
-  //TODO CONFIRMATION MODAL BEFORE DELETING
 
   return (
     <Button variant="danger" onClick={handleDelete}>

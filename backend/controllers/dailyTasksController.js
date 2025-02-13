@@ -147,9 +147,9 @@ function update(req, res) {
     }
 
     //Final values for task update (keep existing values if not provided)
-    const finalTitle = title || existingData.title;
-    const finalContent = content || existingData.content;
-    const finalTime = time || existingData.time;
+    const finalTitle = title !== undefined ? title : existingData.title;
+    const finalContent = content !== undefined ? content : existingData.content;
+    const finalTime = time !== undefined ? time : existingData.time;
 
     //Query to update the task with given values
     const sql =

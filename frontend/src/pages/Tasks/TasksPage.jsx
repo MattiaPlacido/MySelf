@@ -3,6 +3,7 @@ import { useUserContext } from "../../contexts/UserContext";
 import { useNavigate } from "react-router-dom";
 import { useGeneralContext } from "../../contexts/GeneralContext";
 import TaskList from "../../components/TaskList";
+import TaskItem from "./TaskItem";
 import AddTaskButton from "./AddTaskButton";
 
 export default function TasksPage() {
@@ -27,7 +28,12 @@ export default function TasksPage() {
   return (
     <>
       <div className="">
-        <TaskList tasksData={tasks} Button={AddTaskButton} loading={loading} />
+        <TaskList
+          tasksData={tasks}
+          Button={AddTaskButton}
+          TaskItem={TaskItem}
+          loading={loading}
+        />
       </div>
     </>
   );

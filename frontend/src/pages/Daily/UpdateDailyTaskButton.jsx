@@ -13,49 +13,19 @@ import { useGeneralContext } from "../../contexts/GeneralContext";
 const initialFormData = {
   title: "",
   content: "",
-  date: "",
+  time: "",
+  hasTime: true,
 };
 
-export default function UpdateTaskButton({ taskId }) {
+export default function UpdateDailyTaskButton({ taskId }) {
   const [show, setShow] = useState(false);
   const [formData, setFormData] = useState(initialFormData);
-  const [hasDeadline, toggleHasDeadline] = useState(false);
 
-  const { userTasks } = useGeneralContext();
-  const { retrieveSingleTask, updateTask } = userTasks;
+  const { userDailyTasks } = useGeneralContext();
+  const { retrieveSingleDailyTask, updateDailyTask } = userDailyTasks;
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
-
-  const toggleDeadLine = () => {
-    if (hasDeadline) {
-      toggleHasDeadline(false);
-    } else {
-      toggleHasDeadline(true);
-    }
-  };
-
-  //Get existing data to fill form
-  useEffect(() => {
-    async function fetchTask() {
-      const task = await retrieveSingleTask(taskId);
-      if (task) {
-        const parsedDate = new Date(task.date).toISOString().split("T")[0];
-        const today = new Date().toISOString().split("T")[0];
-        if (parsedDate >= today) {
-          toggleHasDeadline(true);
-          const parsedTask = {
-            ...task,
-            date: parsedDate,
-          };
-          setFormData(parsedTask);
-        } else {
-          setFormData(task);
-        }
-      }
-    }
-    fetchTask();
-  }, [taskId]);
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -67,26 +37,42 @@ export default function UpdateTaskButton({ taskId }) {
     }));
   };
 
+  //Get existing data to fill form
+  useEffect(() => {
+    async function fetchTask() {
+      const task = await retrieveSingleDailyTask(taskId);
+      if (task) {
+        if (task.time) {
+          setFormData({ ...task, hasTime: true });
+        } else {
+          setFormData(task);
+        }
+      }
+    }
+    fetchTask();
+  }, [taskId]);
+
   const handleUpdate = () => {
     if (formData.title === "") {
       alert("Title cannot be empty");
       return;
     }
+    //Time validation if present
+    if (formData.hasTime) {
+      const timeRegex = /^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/;
 
-    if (hasDeadline) {
-      const today = new Date().toISOString().split("T")[0];
-      const parsedDate = new Date(formData.date).toISOString().split("T")[0];
-      if (parsedDate < today) {
-        alert("The deadline date must be greater than today");
-        return;
+      if (!timeRegex.test(formData.time)) {
+        alert("Invalid time format! Please enter time as HH:mm (e.g., 14:30)");
+        return false;
       }
-      updateTask(taskId, formData);
+      updateDailyTask(taskId, formData);
     } else {
-      updateTask(taskId, {
+      updateDailyTask(taskId, {
         ...formData,
-        date: null,
+        time: null,
       });
     }
+
     handleClose();
   };
 
@@ -124,13 +110,13 @@ export default function UpdateTaskButton({ taskId }) {
                 onChange={handleInputChange}
               />
             </Form.Group>
-            {hasDeadline && (
-              <Form.Group controlId="formDeadlineDate" className="mt-3">
-                <Form.Label>Select Deadline</Form.Label>
+            {formData.hasTime && (
+              <Form.Group controlId="formTime" className="mt-3">
+                <Form.Label>Select Time of day</Form.Label>
                 <Form.Control
-                  type="date"
-                  name="date"
-                  value={formData.date}
+                  type="time"
+                  name="time"
+                  value={formData.time}
                   onChange={handleInputChange}
                 />
               </Form.Group>
@@ -138,13 +124,13 @@ export default function UpdateTaskButton({ taskId }) {
           </Form>
         </Modal.Body>
         <Modal.Footer className="d-flex justify-content-between">
-          <Form.Group controlId="formDeadlineCheckbox" className="mt-3">
+          <Form.Group controlId="formTimeCheckbox" className="mt-3">
             <Form.Check
               type="checkbox"
-              name="hasDeadline"
-              label="Has deadline"
-              checked={hasDeadline}
-              onChange={toggleDeadLine}
+              name="hasTime"
+              label="Has time"
+              checked={formData.hasTime}
+              onChange={handleInputChange}
             />
           </Form.Group>
           <Button variant="dark" onClick={handleUpdate}>
