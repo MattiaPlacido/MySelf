@@ -22,7 +22,7 @@ export default function TasksPage() {
   }, [userId]);
 
   if (error) {
-    return <h1 className="text-white">Error: {error}</h1>;
+    console.log(error);
   }
 
   return (

@@ -1,5 +1,3 @@
-CREATE DATABASE  IF NOT EXISTS `mydb` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
-USE `mydb`;
 -- MySQL dump 10.13  Distrib 8.0.40, for Win64 (x86_64)
 --
 -- Host: localhost    Database: mydb
@@ -18,43 +16,115 @@ USE `mydb`;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Dumping data for table `daily_tasks`
+-- Table structure for table `daily_tasks`
 --
 
-LOCK TABLES `daily_tasks` WRITE;
-/*!40000 ALTER TABLE `daily_tasks` DISABLE KEYS */;
-/*!40000 ALTER TABLE `daily_tasks` ENABLE KEYS */;
-UNLOCK TABLES;
+DROP TABLE IF EXISTS `daily_tasks`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `daily_tasks` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `title` varchar(45) NOT NULL,
+  `content` text,
+  `time` time DEFAULT NULL,
+  `user_id` bigint unsigned NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_user_idx` (`user_id`),
+  CONSTRAINT `fk_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `task_categories_wip`
+-- Table structure for table `finance_plan`
 --
 
-LOCK TABLES `task_categories_wip` WRITE;
-/*!40000 ALTER TABLE `task_categories_wip` DISABLE KEYS */;
-INSERT INTO `task_categories_wip` VALUES (1,'None',0);
-/*!40000 ALTER TABLE `task_categories_wip` ENABLE KEYS */;
-UNLOCK TABLES;
+DROP TABLE IF EXISTS `finance_plan`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `finance_plan` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `from_date` date NOT NULL,
+  `to_date` date NOT NULL,
+  `goal` decimal(12,2) unsigned NOT NULL,
+  `currency` varchar(20) NOT NULL,
+  `user_id` bigint unsigned NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `user_id` (`user_id`),
+  CONSTRAINT `finance_plan_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `tasks`
+-- Table structure for table `finance_report`
 --
 
-LOCK TABLES `tasks` WRITE;
-/*!40000 ALTER TABLE `tasks` DISABLE KEYS */;
-INSERT INTO `tasks` VALUES (1,'prova','prova',0,'2025-02-12',26),(2,'Milk, eggs, bread, and fruit','Buy groceries',0,'2025-02-12',26);
-/*!40000 ALTER TABLE `tasks` ENABLE KEYS */;
-UNLOCK TABLES;
+DROP TABLE IF EXISTS `finance_report`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `finance_report` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `plan_id` bigint unsigned DEFAULT NULL,
+  `report_type` enum('income','expense') NOT NULL,
+  `amount` decimal(10,2) unsigned NOT NULL,
+  `description` text,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `fk_plan_id` (`plan_id`),
+  CONSTRAINT `fk_plan_id` FOREIGN KEY (`plan_id`) REFERENCES `finance_plan` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `users`
+-- Table structure for table `task_categories_wip`
 --
 
-LOCK TABLES `users` WRITE;
-/*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (25,'prova.emailvalida@gmail.com','prova34','prova34','$2b$10$udQNf4biuBxf2W9WWDdahO7uaX63yUUx0vz0dkS12kYfP/rAFhUNC'),(26,'prova.emailvalida@gma.c','prova34','prova34','$2b$10$Q66DxMt4Yetgj/G92Vyv5.V4oPcvE2RoP2TINj2NVZMYOO55uBeui'),(27,'asd231@sd.co','adasd','asdasdasd','$2b$10$2X4NXJrkw2jNfHrogaPHN.HD1hSkveOwlCHiYWgOnG5nDZWE610J6'),(28,'prova10@email.com','prova10','prova10','$2b$10$wbk7HJblorqyrbHFKWEqr.eVoiGhGuXKJnv/TfB1YdnKlD9nMLQQe'),(29,'prova17@email.com','Prova17','Prova17','$2b$10$b.OTXB7TX63RYO.pBcNqDO81LKBAxXklhWpM4tHZhnfdt5tVgVQwO'),(31,'nuovaprova@email.com','Nuova','Prova','$2b$10$cfPuDnp7cJaQsfFS9nVt6uvvrk9YU.CjG7OB334bxuN4GruKF1G3y');
-/*!40000 ALTER TABLE `users` ENABLE KEYS */;
-UNLOCK TABLES;
+DROP TABLE IF EXISTS `task_categories_wip`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `task_categories_wip` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(45) NOT NULL,
+  `user_id` int NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `tasks`
+--
+
+DROP TABLE IF EXISTS `tasks`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `tasks` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `content` text,
+  `title` varchar(255) NOT NULL,
+  `completed` tinyint NOT NULL,
+  `date` date DEFAULT NULL,
+  `user_id` bigint unsigned NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_user_task` (`user_id`),
+  CONSTRAINT `fk_user_task` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `users`
+--
+
+DROP TABLE IF EXISTS `users`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `users` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `email` varchar(250) NOT NULL,
+  `name` varchar(50) NOT NULL,
+  `surname` varchar(50) NOT NULL,
+  `password` varchar(300) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=33 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -65,4 +135,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-02-11 13:21:04
+-- Dump completed on 2025-02-21 18:03:56

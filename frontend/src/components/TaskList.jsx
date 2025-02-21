@@ -21,9 +21,13 @@ export default function TaskList({
           <h5>Your tasks</h5>
           {Button && <Button />}
         </div>
-        {tasksData.map((task, index) => (
-          <TaskItem taskData={task} key={index} />
-        ))}
+        {tasksData && (
+          <>
+            {tasksData.map((task, index) => (
+              <TaskItem taskData={task} key={index} />
+            ))}
+          </>
+        )}
       </div>
     </div>
   );
