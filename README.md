@@ -4,7 +4,7 @@ MySelf is a web application designed to help you efficiently manage your time, f
 
 ## Technologies Used
 
-- **Frontend:** React, Vite
+- **Frontend:** React
 - **Backend:** Node.js, Express
 - **Database:** MySQL
 - **Authentication:** JSON Web Tokens (JWT), bcrypt
